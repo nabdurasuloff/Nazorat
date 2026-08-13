@@ -2,7 +2,7 @@ name: Build Exe
 
 on:
   push:
-    branches: [ "asosiy", "main", "master" ]
+    branches: [ "main", "master", "asosiy" ]
   workflow_dispatch:
 
 jobs:
@@ -10,10 +10,10 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
@@ -24,10 +24,15 @@ jobs:
 
     - name: Build EXE
       run: |
-        pyinstaller --noconsole --onedir --add-data "templates;templates" --name "qarz_nazorat" main.py
+        pyinstaller --noconsole --onedir --name "qarz_nazorat" main.py
+
+    - name: Copy Templates
+      run: |
+        if (Test-Path templates) { xcopy /E /I templates dist\qarz_nazorat\templates }
+      shell: powershell
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: QarzNazorat-EXE
         path: dist/qarz_nazorat/
